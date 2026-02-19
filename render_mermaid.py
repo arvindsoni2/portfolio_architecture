@@ -56,8 +56,8 @@ def render_mermaid(mmd_path: str, png_path: str):
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        # High DPI rendering
-        ctx = browser.new_context(viewport={"width": 2800, "height": 2000}, device_scale_factor=2)
+        # Large viewport to capture full diagram height at high DPI
+        ctx = browser.new_context(viewport={"width": 3000, "height": 4000}, device_scale_factor=2)
         page = ctx.new_page()
         page.goto(f"file://{Path(html_path).absolute()}")
         page.wait_for_function("document.body.dataset.ready === '1'", timeout=15000)
