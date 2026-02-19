@@ -33,7 +33,7 @@ pip install playwright
 playwright install chromium
 
 # Render a diagram
-python3 render_mermaid.py cs1-genai-order-pipeline/architecture.mmd cs1-genai-order-pipeline/architecture.png
+python3 render_mermaid.py Case_Study1/cs1_genai_order_pipeline.mmd Case_Study1/cs1_genai_order_pipeline.png
 ```
 
 To modify a diagram, edit the `.mmd` file and re-run the renderer. Changes are version-controlled alongside the architecture decisions that motivated them.
@@ -44,7 +44,7 @@ To modify a diagram, edit the `.mmd` file and re-run the renderer. Changes are v
 ## Case Study 1 — GenAI Order Automation Pipeline
 **Organisation:** Natoora Ltd &nbsp;|&nbsp; **Year:** 2023–2024 &nbsp;|&nbsp; **Platform:** GCP
 
-![CS1 Architecture](cs1-genai-order-pipeline/architecture.png)
+![CS1 Architecture](Case_Study1/cs1_genai_order_pipeline.png)
 
 ### Business Problem
 Natoora receives thousands of unstructured customer orders via email daily across 6 global regions (London, Paris, Copenhagen, New York, Miami, Melbourne). Manual processing was slow, error-prone, and unscalable as the business expanded internationally. Orders arrived in multiple languages, formats, and writing styles with no consistent structure.
@@ -77,7 +77,7 @@ Patterns: **Event-driven architecture** · **Human-in-the-loop** · **Prompt eng
 ## Case Study 2 — ML-Powered Recommendation Engine
 **Organisation:** Natoora Ltd &nbsp;|&nbsp; **Year:** 2023 &nbsp;|&nbsp; **Platform:** GCP + Snowflake
 
-![CS2 Architecture](cs2-ml-recommendation-engine/architecture.png)
+![CS2 Architecture](Case_Study2/cs2_ml_recommendation_engine.png)
 
 ### Business Problem
 B2B customers had low awareness of Natoora's premium product range, limiting average order value. A rules-based upsell approach had failed to drive meaningful uplift. Senior leadership had concerns that an ML recommendation system might cannibalise existing premium product lines — a business risk that needed to be addressed architecturally, not just analytically.
@@ -110,7 +110,7 @@ Patterns: **Batch ML training pipeline** · **Ensemble model** · **A/B testing 
 ## Case Study 3 — Hybrid Cloud Field Mobility Platform
 **Organisation:** Northern Powergrid (via TCS) &nbsp;|&nbsp; **Year:** 2019–2020 &nbsp;|&nbsp; **Platform:** AWS (eu-west-2) + On-Premise
 
-![CS3 Architecture](cs3-hybrid-cloud-field-mobility/architecture.png)
+![CS3 Architecture](Case_Study3/cs3_hybrid_cloud_field_mobility.png)
 
 ### Business Problem
 2,000+ field engineers at a major UK Distribution Network Operator relied on paper-based timesheets and manual processes, resulting in delayed claims, high office visit volumes, and significant administrative overhead. The solution had to integrate with **legacy on-premise Oracle HCM/CRM systems** while meeting stringent utility-sector security requirements, GDPR compliance, and Architecture Review Board (ARB) approval standards.
@@ -146,7 +146,7 @@ Patterns: **Strangler fig (gradual legacy decoupling)** · **Hub-and-spoke API i
 ## Case Study 4 — Enterprise Analytics & Data Platform
 **Organisation:** Natoora Ltd &nbsp;|&nbsp; **Year:** 2022–2024 &nbsp;|&nbsp; **Platform:** GCP + Snowflake + Tableau
 
-![CS4 Architecture](cs4-enterprise-data-platform/architecture.png)
+![CS4 Architecture](Case_Study4/cs4_enterprise_data_platform.png)
 
 ### Business Problem
 Business data was siloed across a legacy ERP, Google Analytics, and regional spreadsheets across 6 global regions (London, Paris, Copenhagen, New York, Miami, Melbourne). Leadership had no unified view of product performance, customer behaviour, or operational efficiency — hampering pricing, product, and logistics decisions. There was no consistent data model, no single source of truth, and no governance over PII.
@@ -181,7 +181,7 @@ Patterns: **Medallion architecture (Bronze/Silver/Gold)** · **ELT over ETL** ·
 ## Case Study 5 — Infrastructure Modernisation (Critical National Infrastructure)
 **Organisation:** Northern Powergrid (via TCS) &nbsp;|&nbsp; **Year:** 2020–2022 &nbsp;|&nbsp; **Platform:** VMware vSphere + Windows Server 2016/2019
 
-![CS5 Architecture](cs5-infra-modernisation/architecture.png)
+![CS5 Architecture](Case_Study5/cs5_infra_modernisation.png)
 
 ### Business Problem
 Northern Powergrid operated **120+ Windows servers on end-of-life versions** (2000, 2003, 2008/R2), creating significant security exposure and extended support cost burden. 30+ legacy applications had undocumented dependencies. Any unplanned disruption to the Distribution Management System or SCADA-adjacent applications would have **national infrastructure impact** — zero tolerance for downtime was non-negotiable.
