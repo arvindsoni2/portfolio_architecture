@@ -1,0 +1,118 @@
+%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "primaryColor": "#DEEAF1",
+    "primaryTextColor": "#1A1A1A",
+    "primaryBorderColor": "#2E75B6",
+    "lineColor": "#2E75B6",
+    "secondaryColor": "#F0F4F8",
+    "tertiaryColor": "#EAF3EA",
+    "background": "#FFFFFF",
+    "fontSize": "14px",
+    "fontFamily": "Arial"
+  }
+}}%%
+
+flowchart TB
+
+    %% ── CLIENT LAYER ─────────────────────────────────────────────
+    subgraph CLIENTS["👷  Client Layer  —  2,000+ Field Engineers  &amp;  Office Admins"]
+        direction LR
+        IOS["📱 iOS App<br/>TLS 1.2 + cert pinning"]
+        AND["🤖 Android App<br/>TLS 1.2 + cert pinning"]
+        WEB["🌐 Web Portal<br/>HTTPS / RBAC"]
+    end
+
+    %% ── AWS EDGE ─────────────────────────────────────────────────
+    subgraph EDGE["☁️  AWS  eu-west-2  —  Edge &amp; Identity"]
+        direction LR
+        WAF["🛡️ WAF + DDoS Protection<br/>IP allowlisting · Threat rules"]
+        ALB["⚖️ Application Load Balancer<br/>HTTPS termination · SSL offload"]
+        SAML["🔑 SAML 2.0 / SSO<br/>Active Directory federation<br/>Identity provider (on-prem AD)"]
+    end
+
+    %% ── AWS APPLICATION TIER ─────────────────────────────────────
+    subgraph AWSAPP["☁️  AWS  —  VPC  Private Subnets  —  Application Tier"]
+        direction LR
+        OS["⚡ OutSystems Platform<br/>Low-code · Business logic<br/>Timesheet &amp; Claims workflows"]
+        APIG["🔌 Internal API Gateway<br/>REST endpoints<br/>Routing · Auth · Rate limiting"]
+        IAM["🔑 IAM<br/>Least-privilege roles<br/>Resource-level policies"]
+    end
+
+    %% ── AWS DATA LAYER ───────────────────────────────────────────
+    subgraph AWSDATA["💾  AWS  —  Data Layer  (Encrypted at Rest)"]
+        direction LR
+        RDS["🗄️ RDS PostgreSQL<br/>Application state<br/>AES-256 · Multi-AZ"]
+        S3["🪣 S3<br/>Docs &amp; Attachments<br/>SSE-S3 · Versioning"]
+        CW["📈 CloudWatch<br/>Logs · Metrics<br/>Alerts"]
+    end
+
+    %% ── HYBRID BOUNDARY ──────────────────────────────────────────
+    subgraph HYBRID["🔐  Hybrid Boundary  —  Encrypted Integration Layer"]
+        direction LR
+        VPN["🔗 AWS Site-to-Site VPN<br/>IPSec encrypted tunnel<br/>AWS ↔ NPG Data Centre"]
+        OPGW["🚪 On-Premise API Gateway<br/>SOAP ↔ REST translation<br/>Throttling · Auth"]
+    end
+
+    %% ── ON-PREMISE ───────────────────────────────────────────────
+    subgraph ONPREM["🏭  On-Premise  —  Northern Powergrid Data Centre"]
+        direction LR
+        HCM["📋 Oracle HCM<br/>HR &amp; Workforce Mgmt<br/>Timesheet validation"]
+        CRM["📞 Oracle CRM<br/>Asset &amp; Work Orders<br/>Customer records"]
+        ONCW["📊 Audit &amp; Compliance Logs<br/>GDPR data flow records<br/>CAB change log"]
+    end
+
+    %% ── OUTCOMES ─────────────────────────────────────────────────
+    subgraph OUT["🏆  Architecture Outcomes  —  Year 1"]
+        direction LR
+        O1["💰 £500K<br/>annual savings"]
+        O2["📉 50%<br/>fewer office visits"]
+        O3["⏱️ 6-month<br/>delivery"]
+        O4["🔒 Zero GDPR<br/>incidents"]
+        O5["👷 2,000+<br/>engineers live"]
+    end
+
+    %% ── FLOWS ────────────────────────────────────────────────────
+
+    %% Client → Edge
+    IOS & AND -->|"HTTPS · TLS 1.2<br/>Certificate pinning"| WAF
+    WEB -->|"HTTPS"| WAF
+    WAF --> ALB
+    SAML -->|"SAML assertion<br/>(identity token)"| ALB
+
+    %% Edge → App
+    ALB --> OS
+    OS <-->|"Internal calls"| APIG
+    IAM -.->|"Least privilege<br/>controls"| APIG & RDS & S3
+
+    %% App → Data
+    APIG --> RDS
+    APIG --> S3
+    CW -.->|"Monitors"| OS & APIG & RDS
+
+    %% App → Hybrid boundary → On-prem
+    APIG -->|"Oracle REST calls<br/>via VPN tunnel"| VPN
+    VPN <-->|"IPSec tunnel"| OPGW
+    OPGW -->|"SOAP / XML"| HCM
+    OPGW -->|"REST / JSON"| CRM
+    ONCW -.->|"Audit feed"| ONPREM
+
+    %% Outcomes
+    AWSAPP & ONPREM --> OUT
+
+    %% ── STYLES ───────────────────────────────────────────────────
+    classDef clientStyle  fill:#FFF8DC,stroke:#DAA520,color:#1A1A1A
+    classDef edgeStyle    fill:#E3F2FD,stroke:#1565C0,color:#1A1A1A
+    classDef appStyle     fill:#EDE7F6,stroke:#7B1FA2,color:#1A1A1A
+    classDef dataStyle    fill:#E8F5E9,stroke:#388E3C,color:#1A1A1A
+    classDef hybStyle     fill:#FCE4EC,stroke:#C62828,color:#1A1A1A
+    classDef onpremStyle  fill:#EFEBE9,stroke:#4E342E,color:#1A1A1A
+    classDef outStyle     fill:#E8F5E9,stroke:#2E7D32,color:#1A1A1A
+
+    class IOS,AND,WEB clientStyle
+    class WAF,ALB,SAML edgeStyle
+    class OS,APIG,IAM appStyle
+    class RDS,S3,CW dataStyle
+    class VPN,OPGW hybStyle
+    class HCM,CRM,ONCW onpremStyle
+    class O1,O2,O3,O4,O5 outStyle

@@ -1,0 +1,129 @@
+%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "primaryColor": "#DEEAF1",
+    "primaryTextColor": "#1A1A1A",
+    "primaryBorderColor": "#2E75B6",
+    "lineColor": "#2E75B6",
+    "secondaryColor": "#F0F4F8",
+    "tertiaryColor": "#EAF3EA",
+    "background": "#FFFFFF",
+    "fontSize": "14px",
+    "fontFamily": "Arial"
+  }
+}}%%
+
+flowchart TB
+
+    %% ── LEGACY ESTATE ────────────────────────────────────────────
+    subgraph LEGACY["⚠️  Legacy Estate  —  Pre-Modernisation"]
+        direction LR
+        L1["🔴 Windows Server 2000/2003<br/>End of support 2015<br/>No security patches"]
+        L2["🔴 Windows Server 2008/R2<br/>End of support 2020<br/>Extended support costs"]
+        L3["🟡 Oracle Databases<br/>Tightly coupled to OS<br/>Version dependency risks"]
+        L4["🟡 30+ Legacy Applications<br/>SCADA-adjacent workloads<br/>Undocumented dependencies"]
+    end
+
+    %% ── DISCOVERY ────────────────────────────────────────────────
+    subgraph DISC["🔍  Discovery &amp; Risk Stratification"]
+        direction LR
+        D1["📋 Application Portfolio Audit<br/>120+ servers catalogued<br/>Owner · function · criticality scored"]
+        D2["🗺️ Dependency Mapping<br/>Server ↔ App ↔ DB ↔ Network<br/>Migration sequencing constraints"]
+        D3["⚖️ Risk Stratification<br/>🔴 Tier 1: SCADA-adjacent · Critical<br/>🟡 Tier 2: Business apps · Medium<br/>🟢 Tier 3: Low-risk workloads"]
+    end
+
+    %% ── PHASE 1 ──────────────────────────────────────────────────
+    subgraph PH1["🔵  Phase 1  —  Tactical Lift &amp; Shift  (Tier 3 — Low Risk)"]
+        direction LR
+        P1A["🖥️ Target: Windows Server 2016/2019<br/>In-place upgrade or new VM (VMware)<br/>Parallel run before cut-over"]
+        P1B["✅ Validation Gates<br/>Functional smoke tests<br/>Performance benchmarks<br/>Security scan (Nessus)"]
+        P1C["🔄 Staged Cut-Over<br/>Non-prod → UAT → Prod<br/>Rollback window held open 48hrs"]
+    end
+
+    %% ── PHASE 2 ──────────────────────────────────────────────────
+    subgraph PH2["🟣  Phase 2  —  Complex Legacy Transformation  (Tier 1 &amp; 2 — High Risk)"]
+        direction LR
+        P2A["⚙️ App Re-Architecture<br/>Decouple OS dependencies<br/>API abstraction layer added"]
+        P2B["🗄️ Oracle DB Upgrade<br/>Schema compatibility testing<br/>DBA-supervised migration"]
+        P2C["🔁 Blue/Green Deployment<br/>Full parallel environment<br/>Instant rollback · Zero downtime"]
+    end
+
+    %% ── DECOMMISSION ─────────────────────────────────────────────
+    subgraph DECOM["🗑️  Decommission &amp; Retirement"]
+        direction LR
+        DC1["📦 30+ Apps Retired or Merged<br/>Licence costs eliminated<br/>Config baseline updated"]
+        DC2["🧹 Server Decommission<br/>Data wiped (DoD 5220.22-M)<br/>Hardware repurposed / scrapped"]
+    end
+
+    %% ── TARGET ESTATE ────────────────────────────────────────────
+    subgraph TARGET["✅  Target Estate  —  Post-Modernisation"]
+        direction LR
+        T1["🟢 Windows Server 2016/2019<br/>Mainstream support to 2027+<br/>Full patch compliance"]
+        T2["🟢 Oracle DB (upgraded)<br/>Supported versions<br/>Performance optimised"]
+        T3["🟢 VMware vSphere<br/>Virtualised fleet<br/>Snapshot-based rollback enabled"]
+    end
+
+    %% ── GOVERNANCE PANEL ─────────────────────────────────────────
+    subgraph GOV["📜  ITIL / CAB Governance  (Applied to Every Change)"]
+        direction LR
+        G1["📝 RFC per Change<br/>Impact &amp; rollback documented<br/>Pre-approved by CAB"]
+        G2["🏛️ Change Advisory Board<br/>Weekly review · Emergency CAB<br/>for P1 issues"]
+        G3["🔙 Rollback Procedures<br/>Defined &amp; tested in non-prod<br/>before every production change"]
+        G4["🔬 Post-Implementation Review<br/>Success criteria verified<br/>Lessons captured per phase"]
+    end
+
+    %% ── CROSS-FUNCTIONAL TEAMS ───────────────────────────────────
+    subgraph TEAMS["👥  Cross-Functional Sign-Off Teams  (Gate at Each Phase)"]
+        direction LR
+        TM1["🔒 Security Architecture<br/>Patch compliance sign-off<br/>Pen test &amp; vulnerability scan"]
+        TM2["🗄️ DBA Team<br/>Oracle schema migration<br/>Performance validation"]
+        TM3["🌐 Network Team<br/>VLAN &amp; firewall rules<br/>DNS cutover coordination"]
+        TM4["⚡ Application Teams<br/>Functional test sign-off<br/>Smoke test per workload"]
+    end
+
+    %% ── OUTCOMES ─────────────────────────────────────────────────
+    subgraph OUT["🏆  Programme Outcomes"]
+        direction LR
+        O1["💰 £400K<br/>Annual extended<br/>support costs eliminated"]
+        O2["🖥️ 120+ Servers<br/>migrated to<br/>supported OS"]
+        O3["🗑️ 30+ Apps<br/>decommissioned<br/>tech debt retired"]
+        O4["🔒 Zero downtime<br/>Zero business<br/>disruption"]
+        O5["✅ Full patch<br/>compliance<br/>achieved"]
+    end
+
+    %% ── FLOWS ────────────────────────────────────────────────────
+    L1 & L2 & L3 & L4 -->|"Audit &amp; catalogue"| D1
+    D1 --> D2 --> D3
+
+    D3 -->|"Tier 3 workloads"| P1A
+    D3 -->|"Tier 1 &amp; 2 workloads"| P2A
+
+    P1A --> P1B --> P1C
+    P2A --> P2B --> P2C
+
+    P1C -->|"Server retired"| DECOM
+    P2C -->|"Legacy app retired"| DECOM
+
+    PH1 & PH2 --> TARGET
+    TARGET & DECOM --> OUT
+
+    %% ── STYLES ───────────────────────────────────────────────────
+    classDef legacyStyle  fill:#FFEBEE,stroke:#C62828,color:#1A1A1A
+    classDef discStyle    fill:#FFF8DC,stroke:#DAA520,color:#1A1A1A
+    classDef ph1Style     fill:#E3F2FD,stroke:#1565C0,color:#1A1A1A
+    classDef ph2Style     fill:#EDE7F6,stroke:#7B1FA2,color:#1A1A1A
+    classDef decomStyle   fill:#ECEFF1,stroke:#546E7A,color:#1A1A1A
+    classDef targetStyle  fill:#E8F5E9,stroke:#388E3C,color:#1A1A1A
+    classDef govStyle     fill:#FFF3E0,stroke:#E65100,color:#1A1A1A
+    classDef teamStyle    fill:#F3E5F5,stroke:#6A1B9A,color:#1A1A1A
+    classDef outStyle     fill:#E8F5E9,stroke:#2E7D32,color:#1A1A1A
+
+    class L1,L2,L3,L4 legacyStyle
+    class D1,D2,D3 discStyle
+    class P1A,P1B,P1C ph1Style
+    class P2A,P2B,P2C ph2Style
+    class DC1,DC2 decomStyle
+    class T1,T2,T3 targetStyle
+    class G1,G2,G3,G4 govStyle
+    class TM1,TM2,TM3,TM4 teamStyle
+    class O1,O2,O3,O4,O5 outStyle

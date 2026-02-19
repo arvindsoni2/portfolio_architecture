@@ -1,0 +1,132 @@
+%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "primaryColor": "#DEEAF1",
+    "primaryTextColor": "#1A1A1A",
+    "primaryBorderColor": "#2E75B6",
+    "lineColor": "#2E75B6",
+    "secondaryColor": "#F0F4F8",
+    "tertiaryColor": "#EAF3EA",
+    "background": "#FFFFFF",
+    "fontSize": "14px",
+    "fontFamily": "Arial"
+  }
+}}%%
+
+flowchart TB
+
+    %% ── DATA SOURCES ─────────────────────────────────────────────
+    subgraph SOURCES["🗄️  Data Sources"]
+        direction LR
+        ERP["🏭 ERP<br/>Order History"]
+        CRM["👥 Customer Master<br/>Segmentation & Accounts"]
+        CAT["📦 Product Catalogue<br/>SKUs, Categories, Pricing"]
+    end
+
+    %% ── SNOWFLAKE FEATURE STORE ──────────────────────────────────
+    subgraph DW["❄️  Snowflake  —  Medallion Architecture  —  Feature Store"]
+        direction LR
+        BRZ["🥉 Bronze Layer<br/>Raw Ingested Data"]
+        SLV["🥈 Silver Layer<br/>Cleaned & Joined<br/>Customer × Product × Order"]
+        GLD["🥇 Gold Layer<br/>ML-Ready Feature Tables<br/>basket matrix · purchase vectors"]
+        BRZ --> SLV --> GLD
+    end
+
+    %% ── ALGORITHM A — APRIORI ────────────────────────────────────
+    subgraph APRIORI["📐  Algorithm A  —  Market Basket Analysis  (Apriori)"]
+        direction TB
+        AP1["⚙️ Apriori<br/>mlxtend<br/>Frequent Itemset Mining"]
+        AP2["📋 Association Rules<br/>Support / Confidence / Lift<br/>Filtering & Ranking"]
+        AP3["💾 Rule Store<br/>item_A → item_B<br/>lift score"]
+        AP1 --> AP2 --> AP3
+    end
+
+    %% ── ALGORITHM B — k-NN ───────────────────────────────────────
+    subgraph KNN["🤝  Algorithm B  —  Collaborative Filtering  (k-NN)"]
+        direction TB
+        KN1["⚙️ k-NN Model<br/>scikit-learn<br/>Customer Similarity Matrix"]
+        KN2["🔍 Nearest Neighbours<br/>Top-K Similar Customers<br/>Purchase Profile Matching"]
+        KN3["💾 Similarity Store<br/>customer_id → neighbour_ids<br/>weighted scores"]
+        KN1 --> KN2 --> KN3
+    end
+
+    %% ── ENSEMBLE LAYER ───────────────────────────────────────────
+    subgraph ENSEMBLE["🎯  Ensemble & Ranking Layer"]
+        direction TB
+        ENS["🔀 Recommendation Blender<br/>Merge Apriori + k-NN outputs<br/>De-duplicate & Score"]
+        RANK["🏆 Ranking Engine<br/>Boost premium products<br/>Filter already-purchased<br/>Apply business rules"]
+        ENS --> RANK
+    end
+
+    %% ── A/B TESTING ──────────────────────────────────────────────
+    subgraph AB["🧪  A/B Testing Framework  (Phased Rollout)"]
+        direction LR
+        SPLIT["⚖️ Traffic Splitter<br/>Control: existing rules<br/>Treatment: ML model"]
+        TRACK["📊 Experiment Tracker<br/>Conversion · Basket Size<br/>Premium Product Adoption"]
+        SPLIT --> TRACK
+    end
+
+    %% ── SERVING LAYER ────────────────────────────────────────────
+    subgraph SERVE["🚀  Serving Layer  (GCP)"]
+        direction LR
+        CACHE["⚡ Pre-computed Cache<br/>Top-N per customer segment"]
+        API["🔌 Recommendation API<br/>REST  /recommend?customer_id=X"]
+        CACHE --> API
+    end
+
+    %% ── CONSUMER TOUCHPOINTS ─────────────────────────────────────
+    subgraph CONSUMERS["🛒  Consumer Touchpoints"]
+        direction LR
+        CHK["🛒 Checkout UI<br/>Customers like you also bought..."]
+        SLS["📧 Sales Team<br/>Personalised order suggestions"]
+    end
+
+    %% ── OBSERVABILITY ────────────────────────────────────────────
+    subgraph OBS["📈  Tableau  —  Business Outcomes Dashboard"]
+        direction LR
+        T1["📊 Basket Size KPI<br/>+10% uplift"]
+        T2["💰 Revenue Attribution<br/>£124K annual"]
+        T3["🔬 Premium Cannibalisation<br/>Monitor by SKU cohort<br/>+8% premium adoption"]
+    end
+
+    %% ── FLOWS ────────────────────────────────────────────────────
+    ERP & CRM & CAT -->|"Daily ETL batch"| BRZ
+
+    GLD -->|"Basket transaction matrix"| AP1
+    GLD -->|"Customer purchase vectors"| KN1
+
+    AP3 -->|"Candidate recs"| ENS
+    KN3 -->|"Candidate recs"| ENS
+
+    RANK -->|"ML cohort"| SPLIT
+    TRACK -->|"Winner to production"| API
+
+    RANK --> CACHE
+
+    API --> CHK & SLS
+
+    CHK & SLS -->|"Order events fed back"| BRZ
+
+    RANK --> T1
+    TRACK --> T2 & T3
+
+    %% ── STYLES ───────────────────────────────────────────────────
+    classDef sourceStyle  fill:#FFF8DC,stroke:#DAA520,color:#1A1A1A
+    classDef dwStyle      fill:#DEEAF1,stroke:#2E75B6,color:#1A1A1A
+    classDef aprioriStyle fill:#EDE7F6,stroke:#7B1FA2,color:#1A1A1A
+    classDef knnStyle     fill:#E8F5E9,stroke:#388E3C,color:#1A1A1A
+    classDef ensStyle     fill:#FFF3E0,stroke:#E65100,color:#1A1A1A
+    classDef abStyle      fill:#FCE4EC,stroke:#C62828,color:#1A1A1A
+    classDef serveStyle   fill:#E3F2FD,stroke:#1565C0,color:#1A1A1A
+    classDef consStyle    fill:#F3E5F5,stroke:#6A1B9A,color:#1A1A1A
+    classDef obsStyle     fill:#E8F5E9,stroke:#2E7D32,color:#1A1A1A
+
+    class ERP,CRM,CAT sourceStyle
+    class BRZ,SLV,GLD dwStyle
+    class AP1,AP2,AP3 aprioriStyle
+    class KN1,KN2,KN3 knnStyle
+    class ENS,RANK ensStyle
+    class SPLIT,TRACK abStyle
+    class API,CACHE serveStyle
+    class CHK,SLS consStyle
+    class T1,T2,T3 obsStyle

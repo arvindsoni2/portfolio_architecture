@@ -1,0 +1,93 @@
+%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "primaryColor": "#DEEAF1",
+    "primaryTextColor": "#1A1A1A",
+    "primaryBorderColor": "#2E75B6",
+    "lineColor": "#2E75B6",
+    "secondaryColor": "#F0F4F8",
+    "tertiaryColor": "#EAF3EA",
+    "background": "#FFFFFF",
+    "fontSize": "15px",
+    "fontFamily": "Arial"
+  }
+}}%%
+
+flowchart TB
+
+    %% ── INPUT LAYER ──────────────────────────────────────────────
+    subgraph REGIONS["📧  Customer Regions  (6 Global)"]
+        direction LR
+        R1["🇬🇧 London"]
+        R2["🇫🇷 Paris"]
+        R3["🇩🇰 Copenhagen"]
+        R4["🇺🇸 New York"]
+        R5["🇺🇸 Miami"]
+        R6["🇦🇺 Melbourne"]
+    end
+
+    %% ── INGESTION LAYER ──────────────────────────────────────────
+    subgraph INGEST["☁️  GCP — Ingestion Layer"]
+        EM["📬 Gmail / SMTP\nEmail Receiver"]
+        PS["📨 Cloud Pub/Sub\nAsync Message Router"]
+    end
+
+    %% ── AI PROCESSING LAYER ──────────────────────────────────────
+    subgraph AI["🤖  GCP — GenAI Processing Layer"]
+        CF["⚡ Cloud Function\nEvent Trigger & Orchestrator"]
+        LLM["🧠 LLM Agent\n(GPT-4 / Claude API)\nStructured Order Extraction"]
+        VAL["✅ Validation Service\nSchema + Business Rules Check"]
+    end
+
+    %% ── INTEGRATION LAYER ─────────────────────────────────────────
+    subgraph INTEGRATION["🔌  Integration Layer"]
+        CAT["📦 Product Catalogue API\nSKU & Pricing Lookup"]
+        ACC["👤 Customer Account API\nCredit Limit & Entitlements"]
+    end
+
+    %% ── OUTPUT LAYER ─────────────────────────────────────────────
+    subgraph OUTPUT["🏭  Output Layer"]
+        ERP["🗂️ Order Management\nSystem (ERP)"]
+        HRQ["👩‍💼 Human Review Queue\nException Handling"]
+        CONF["📩 Confirmation Email\nAuto-Response to Customer"]
+    end
+
+    %% ── OBSERVABILITY LAYER ───────────────────────────────────────
+    subgraph OBS["📊  Observability & Feedback Layer"]
+        SF["❄️ Snowflake\nAudit Log & Exception Store"]
+        TB["📈 Tableau Dashboard\nProcessing KPIs & Error Rates"]
+        FB["🔁 Prompt Feedback Loop\nCorrection Capture → Retraining"]
+    end
+
+    %% ── FLOWS ────────────────────────────────────────────────────
+    R1 & R2 & R3 & R4 & R5 & R6 -->|"Unstructured order emails"| EM
+    EM -->|"Ingest & queue"| PS
+    PS -->|"Trigger on new message"| CF
+    CF -->|"Raw email payload"| LLM
+    LLM -->|"Structured JSON (items, qty, notes)"| VAL
+    VAL -->|"SKU lookup"| CAT
+    VAL -->|"Account check"| ACC
+    CAT & ACC -->|"Validated order data"| VAL
+    VAL -->|"✅ Valid order"| ERP
+    VAL -->|"❌ Exception (ambiguous / invalid)"| HRQ
+    ERP -->|"Order confirmed"| CONF
+    CONF -->|"Auto-reply to customer"| R1
+    HRQ -->|"Human correction captured"| FB
+    CF & ERP & HRQ -->|"All events logged"| SF
+    SF -->|"Metrics feed"| TB
+    FB -->|"Improved prompts deployed"| CF
+
+    %% ── STYLES ───────────────────────────────────────────────────
+    classDef regionStyle fill:#FFF8DC,stroke:#DAA520,color:#1A1A1A,rx:8
+    classDef ingestStyle fill:#DEEAF1,stroke:#2E75B6,color:#1A1A1A,rx:8
+    classDef aiStyle fill:#EDE7F6,stroke:#7B1FA2,color:#1A1A1A,rx:8
+    classDef integStyle fill:#E8F5E9,stroke:#388E3C,color:#1A1A1A,rx:8
+    classDef outputStyle fill:#FFF3E0,stroke:#E65100,color:#1A1A1A,rx:8
+    classDef obsStyle fill:#E3F2FD,stroke:#1565C0,color:#1A1A1A,rx:8
+
+    class R1,R2,R3,R4,R5,R6 regionStyle
+    class EM,PS ingestStyle
+    class CF,LLM,VAL aiStyle
+    class CAT,ACC integStyle
+    class ERP,HRQ,CONF outputStyle
+    class SF,TB,FB obsStyle

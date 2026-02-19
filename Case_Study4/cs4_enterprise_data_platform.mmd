@@ -1,0 +1,118 @@
+%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "primaryColor": "#DEEAF1",
+    "primaryTextColor": "#1A1A1A",
+    "primaryBorderColor": "#2E75B6",
+    "lineColor": "#2E75B6",
+    "secondaryColor": "#F0F4F8",
+    "tertiaryColor": "#EAF3EA",
+    "background": "#FFFFFF",
+    "fontSize": "14px",
+    "fontFamily": "Arial"
+  }
+}}%%
+
+flowchart TB
+
+    %% ── SOURCE SYSTEMS ───────────────────────────────────────────
+    subgraph SOURCES["🗄️  Source Systems  —  6 Global Regions"]
+        direction LR
+        ERP["🏭 Legacy ERP<br/>Orders · Inventory<br/>Product master"]
+        GA["📊 Google Analytics<br/>Web &amp; app events<br/>Behavioural clickstream"]
+        REG["🌍 Regional Operations<br/>London · Paris · Copenhagen<br/>New York · Miami · Melbourne"]
+        CRM2["👥 Customer Data<br/>Account records<br/>B2B segmentation"]
+    end
+
+    %% ── INGESTION ────────────────────────────────────────────────
+    subgraph INGEST["⚙️  Ingestion Layer  (GCP)"]
+        direction LR
+        BATCH["🔄 Batch ETL<br/>Python pipelines<br/>Scheduled · ERP / CSV / API"]
+        STREAM["⚡ GCP Pub/Sub<br/>Real-time event streaming<br/>App &amp; web events"]
+        STAGE["🪣 Cloud Storage<br/>Landing zone<br/>Raw file staging"]
+    end
+
+    %% ── SNOWFLAKE MEDALLION ──────────────────────────────────────
+    subgraph BRONZE["🥉  Bronze Layer  —  Raw Vault  (Immutable · Full History)"]
+        direction LR
+        B1["📥 Raw Orders &amp; ERP<br/>Unmodified source records"]
+        B2["📥 Raw GA Events<br/>Clickstream · All properties"]
+        B3["📥 Raw Regional Data<br/>Multi-currency · Multi-locale"]
+    end
+
+    subgraph SILVER["🥈  Silver Layer  —  Cleansed &amp; Conformed  (dbt transforms + DQ checks)"]
+        direction LR
+        S1["🔧 Cleansed Orders<br/>Deduplication · Nulls resolved<br/>Currency normalised to GBP"]
+        S2["🔧 Customer Profiles<br/>Identity resolution<br/>Merged &amp; enriched"]
+        S3["🔧 Product Catalogue<br/>SKU harmonisation<br/>Category &amp; margin mapping"]
+    end
+
+    subgraph GOLD["🥇  Gold Layer  —  Analytics-Ready Domain Models  (RBAC enforced)"]
+        direction LR
+        G1["📦 Orders &amp; Revenue<br/>Fact table<br/>Grain: Region · Product · Customer"]
+        G2["👤 Customer 360<br/>LTV · Segment · Frequency<br/>Churn risk score"]
+        G3["📈 Product Performance<br/>Basket analysis inputs<br/>Category trends &amp; velocity"]
+        G4["🌍 Regional Ops<br/>Fulfilment &amp; delivery KPIs<br/>By region &amp; product line"]
+    end
+
+    %% ── CONSUMPTION ──────────────────────────────────────────────
+    subgraph CONSUME["📊  Consumption Layer"]
+        direction LR
+        TAB["📈 Tableau Dashboards<br/>Product · Commercial · Ops<br/>C-suite &amp; team reporting"]
+        ML["🤖 ML Feature Store<br/>Feeds CS2 Rec Engine<br/>Apriori + k-NN training inputs"]
+        APIS["🔌 Analytics API<br/>Embedded metrics<br/>Internal product tooling"]
+    end
+
+    %% ── GOVERNANCE PANEL (no cross-arrows) ───────────────────────
+    subgraph GOV["🔐  Data Governance &amp; Quality  (Applied Across All Layers)"]
+        direction LR
+        DQ["✅ Data Quality Gates<br/>Schema · Null · Range<br/>Referential integrity checks"]
+        RBAC["🔑 Snowflake RBAC<br/>Role-based access per domain<br/>Column-level security on PII"]
+        GDPR2["⚖️ GDPR Controls<br/>PII tagging &amp; dynamic masking<br/>Retention &amp; deletion policies"]
+        MON["🔔 Pipeline Monitoring<br/>SLA alerting<br/>Data freshness &amp; lineage tracking"]
+    end
+
+    %% ── OUTCOMES ─────────────────────────────────────────────────
+    subgraph OUT["🏆  Business Outcomes"]
+        direction LR
+        O1["📊 Unified analytics<br/>across 6 regions<br/>Single source of truth"]
+        O2["🤖 ML training data<br/>enabled Rec Engine<br/>→ +£124K annual revenue"]
+        O3["📉 Inventory waste<br/>reduced via<br/>demand signals"]
+        O4["🏢 Data-driven culture<br/>adopted at CTO<br/>&amp; COO level"]
+    end
+
+    %% ── FLOWS ────────────────────────────────────────────────────
+    ERP & CRM2 -->|"Scheduled batch"| BATCH
+    GA & REG -->|"Real-time events"| STREAM
+    BATCH & STREAM --> STAGE
+
+    STAGE -->|"Bronze load"| B1 & B2 & B3
+
+    B1 & B2 & B3 -->|"dbt SQL transforms<br/>+ data quality gates"| S1 & S2 & S3
+
+    S1 & S2 & S3 -->|"Domain modelling<br/>aggregate &amp; enrich"| G1 & G2 & G3 & G4
+
+    G1 & G2 & G3 & G4 --> TAB
+    G2 & G3 -->|"Feature vectors"| ML
+    G1 & G4 --> APIS
+
+    CONSUME --> OUT
+
+    %% ── STYLES ───────────────────────────────────────────────────
+    classDef sourceStyle  fill:#FFF8DC,stroke:#DAA520,color:#1A1A1A
+    classDef ingestStyle  fill:#E3F2FD,stroke:#1565C0,color:#1A1A1A
+    classDef bronzeStyle  fill:#FBE9E7,stroke:#BF360C,color:#1A1A1A
+    classDef silverStyle  fill:#ECEFF1,stroke:#546E7A,color:#1A1A1A
+    classDef goldStyle    fill:#FFFDE7,stroke:#F9A825,color:#1A1A1A
+    classDef consumeStyle fill:#E8F5E9,stroke:#388E3C,color:#1A1A1A
+    classDef govStyle     fill:#F3E5F5,stroke:#6A1B9A,color:#1A1A1A
+    classDef outStyle     fill:#E8F5E9,stroke:#2E7D32,color:#1A1A1A
+
+    class ERP,GA,REG,CRM2 sourceStyle
+    class BATCH,STREAM,STAGE ingestStyle
+    class B1,B2,B3 bronzeStyle
+    class S1,S2,S3 silverStyle
+    class G1,G2,G3,G4 goldStyle
+    class TAB,ML,APIS consumeStyle
+    class DQ,RBAC,GDPR2,MON govStyle
+    class O1,O2,O3,O4 outStyle

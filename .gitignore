@@ -1,0 +1,16 @@
+# Claude Code session data
+.claude/
+
+# LibreOffice lock files
+.~lock.*#
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+# resume no need to upload here
+Arvind_SA_Resume_Portfolio.docx
