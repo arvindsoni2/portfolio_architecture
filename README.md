@@ -5,7 +5,7 @@
 >
 > 🎓 **AWS Cloud Solutions Architect** — Coursera Professional Certificate (Feb 2026)
 > 📋 **AWS Certified Solutions Architect – Associate (SAA-C03)** — In progress
-> 📋 PMP · PMI-ACP · PSM-1 · PSPO-1
+> 📋 PMP · PMI-ACP · PSM-1 · PSPO-1 · PSPO-II (Oct 2026)
 
 ---
 
@@ -251,9 +251,11 @@ Cloud:        AWS Cloud Solutions Architect – Coursera Professional Certificat
               AWS SAA-C03 – In progress
               Courses: AWS Technical Essentials · Architecting on AWS · Building Data Lakes · Exam Prep
 
-Delivery:     PMP · PMI-ACP · PSM-1 · PSPO-1
+Delivery:     PMP · PMI-ACP · PSM-1 · PSPO-1 · PSPO-II (Oct 2026)
 
-AI/ML:        IBM Generative AI for Project Managers
+AI/ML:        AWS Certified AI Practitioner (AIF-C01, Apr 2026)
+              GeeksforGeeks AI Engineering — Generative AI & Agentic AI
+              IBM Generative AI for Project Managers
 
 Stack:        Python · SQL · GCP · AWS · Snowflake · Tableau · Terraform · Docker
               GitHub Actions (CI/CD) · OutSystems · Oracle · Mermaid (architecture-as-code)
